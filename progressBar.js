@@ -119,7 +119,7 @@ class progressBar {
 		* @param { Number } nb - the new empty character
 		* @returns { Boolean }
 		*/
-	updateFullCht(str){
+	updateEmptyCht(str){
 		if (typeof str !== "string") return false;
 		this.empty = str;
 		return true;
