@@ -35,19 +35,17 @@ class progressBar {
     const progress = (this.value/this.maxValue).toFixed(1)
     if ( progress > 1) return this.dock.replace(/{(progression|percent)}/g, (a,b) => {
       switch(a) {
-        case "{progression}": return this.getBar(this.full, this.length); case "{percent}": return 100; default: return a;
+          case "{progression}": return this.getBar(this.full, this.length);
+          case "{percent}": return 100;
+          default: return a;
 	}
       });
-  
-    const filledLength = (progress*this.length).toFixed(0);
-    const emptyLength = this.length-filledLength;
 
-    const filled = this.getBar(this.full, filledLength);
-    const empty = this.getBar(this.empty, emptyLength);
-    const percent = ((this.value/this.maxValue)*100).toFixed(0);
     return this.dock.replace(/{(progression|percent)}/g, (a,b) => {
       switch(a) {
-	case "{progression}": return filled+""+empty; case "{percent}": return percent; default: return a;
+	case "{progression}": return this.getBar(this.full, (progress*this.length).toFixed(0))+""+this.getBar(this.empty, (this.length-(progress*this.length).toFixed(0)));
+        case "{percent}": return ((this.value/this.maxValue)*100).toFixed(0);
+        default: return a;
       };
     });
   };
@@ -56,12 +54,12 @@ class progressBar {
     * This function update the value of the bar
     *
     * @param { Number } nb - the value to add 
-    * @returns { Object }
+    * @returns { Boolean }
     */
   update(nb){
     if ( typeof nb !== "number" ) return false;
     this.value += nb;
-    return { changeValue: nb, oldValue: this.value - nb, newValue: this.value };
+    return true;
   };
 	
   /**
