@@ -7,10 +7,18 @@
    * WARNING
    * 
    * if you give a key in the old data that is not in the model, the key is not set in the new data !
+   *
+   * SECOND WARNING
+   * 
+   * If you have a big object, the operation may be longer, you can update the function to a async function with a promise !
    * 
    */
 
+// this function is to simplify the code below, we can check if the data is an objet easily with that.
+function isObject(data) { return typeof data == "object" && !Array.isArray(data) };
+
 module.exports = function repairObject(data, model) {
+    if (!isObject(data) || !isObject(model)) throw new Error("Invalid values was provided !");
     const newData = {};
     const entries = Object.entries(model);
     Object.entries(data).forEach((e) => {
@@ -20,9 +28,7 @@ module.exports = function repairObject(data, model) {
     });
     entries.forEach((etr) => {
       if (Object.keys(newData).some(a => a == etr[0])) return;
-      else {
-        newData[etr[0]] = etr[1];
-      }
+      else { newData[etr[0]] = etr[1]; }
     })
 
     return newData;
