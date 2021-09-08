@@ -17,19 +17,25 @@
 // this function is to simplify the code below, we can check if the data is an objet easily with that.
 function isObject(data) { return typeof data == "object" && !Array.isArray(data) };
 
-module.exports = function repairObject(data, model) {
-    if (!isObject(data) || !isObject(model)) throw new Error("Invalid values was provided !");
-    const newData = {};
-    const entries = Object.entries(model);
-    Object.entries(data).forEach((e) => {
-      const modelData = entries.find(m => m[0] == e[0]);
-      if (entries.some((m) => m[0] == e[0])) { newData[e[0]] = (modelData && typeof e[1] !== modelData[1] ? modelData[1] : e[1]) }; 
-      if (typeof e[0] == "object" && Object.keys(model).includes(e[0])) newData[e] = repairObject(e[1], model[e[0]]);
-    });
-    entries.forEach((etr) => {
-      if (Object.keys(newData).some(a => a == etr[0])) return;
-      else { newData[etr[0]] = etr[1]; }
-    })
+// for have a good type, the array and Object type is the same with typeof !
+function getType(data) {
+  if (typeof data == "object") return Array.isArray(data) ? "array":"object";
+  else return typeof data;
+}
 
-    return newData;
-  }
+module.exports = function repairObject(data, model, first = true) {
+  if ((!isObject(data) || !isObject(model)) && first) throw new Error("Invalid values was provided !");
+  const newData = {};
+  const entries = Object.entries(model);
+  Object.entries(data).forEach((e) => {
+    const modelData = entries.find(m => m[0] == e[0]);
+    if (entries.some((m) => m[0] == e[0])) { newData[e[0]] = (modelData && getType(e[1]) !== getType(modelData[1]) ? modelData[1] : e[1]) }; 
+    if (getType(e[0]) == "object" && Object.keys(model).includes(e[0])) newData[e] = repairObject(e[1], model[e[0]], false);
+  });
+  entries.forEach((etr) => {
+    if (Object.keys(newData).some(a => a == etr[0])) return;
+    else { newData[etr[0]] = etr[1]; }
+  })
+
+  return newData;
+}
